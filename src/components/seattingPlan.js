@@ -3,13 +3,15 @@ import { arrayGen } from "@/helper"
 
 const seatColor = {
     "": "bg-blue-200",
-    "occupied": "bg-gray-500",
+    "occupied": "bg-red-500",
+    "S": "bg-red-500",
     "wheelchair": "bg-purple-400",
 }
 
 const cantSelectSeatType = {
     "space": "",
     "occupied": "",
+    "S": ""
 }
 
 export default function SeattingPlan({ col, row, specialSeat, selectedSeat, setSelectedSeat, adminMode = false }) {
@@ -17,7 +19,7 @@ export default function SeattingPlan({ col, row, specialSeat, selectedSeat, setS
     const colA = arrayGen(col)
 
     const selectSeat = (seat) => {
-        const index = selectedSeat.findIndex((v) => v.x == seat.x && v.x == seat.y)
+        const index = selectedSeat.findIndex((v) => v.x == seat.x && v.y == seat.y)
         if (index == -1)
             setSelectedSeat([...selectedSeat, seat])
         else
@@ -30,7 +32,7 @@ export default function SeattingPlan({ col, row, specialSeat, selectedSeat, setS
         if (allY) {
             let temp = []
             for (let index = 0; index < col; index++) {
-                temp.push({ X: index, Y: y })
+                temp.push({ x: index, y: y })
             }
             setSelectedSeat([...selectedSeat, ...temp])
         }
@@ -60,9 +62,9 @@ export default function SeattingPlan({ col, row, specialSeat, selectedSeat, setS
                         (seatType == "space" && !isSelect ? "opacity-0 " : "") +
                         (isSelect ? "bg-green-400 " : seatColor[seatType] ?? "bg-yellow-200")}
                         onClick={() => {
-                            if (cantSelectSeatType[seatType] != '' || adminMode) selectSeat({ X: x, Y: y, seatX, seatY })
+                            if (cantSelectSeatType[seatType] != '' || adminMode) selectSeat({ x, y, seatX, seatY })
                         }}>
-                        {seatType != 'space' && adminMode ? `${seatY / 26 >= 1 ? String.fromCharCode(a + seatY / 26 - 1) : ""}${String.fromCharCode(a + seatY % 26)}${seatX}` : ""} {specialIndex == -1 ? "" : seatType.substring(0, 1)}
+                        {seatType != 'space' ? `${seatY / 26 >= 1 ? String.fromCharCode(a + seatY / 26 - 1) : ""}${String.fromCharCode(a + seatY % 26)}${seatX}` : ""} {specialIndex == -1 ? "" : seatType.substring(0, 1)}
                     </div>
                 })
                 }</div >
