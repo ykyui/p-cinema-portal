@@ -45,6 +45,6 @@ export default function MovieIndex() {
                 query: { movieId: e.id },
             }}><Chip label={e.name}></Chip ></Link>
         })}
-        <div>{JSON.stringify(data)}</div>
+        {process.env.NEXT_PUBLIC_ENV == "DEV" ? <div>{JSON.stringify(data)}</div> : ""}
     </div>
 }

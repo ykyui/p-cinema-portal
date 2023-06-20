@@ -165,7 +165,7 @@ export default function TheatreDetail({ query }) {
             </div>
         }
         <div>
-            {JSON.stringify(theatres)}
+            {process.env.NEXT_PUBLIC_ENV == "DEV" ? <div>{JSON.stringify(theatres)}</div> : ""}
         </div>
 
     </form>

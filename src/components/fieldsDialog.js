@@ -65,7 +65,7 @@ export default function FieldsDialog(props) {
                     setDialog(false)
                 }}>Ok</Button>
             </DialogActions>
-            {JSON.stringify(availableMovies)}
+            {process.env.NEXT_PUBLIC_ENV == "DEV" ? <div>{JSON.stringify(availableMovies)}</div> : ""}
         </Dialog>
     </>
 }

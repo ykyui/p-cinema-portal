@@ -70,6 +70,6 @@ export default function movieDetail({ query }) {
             setFilename(e.id)
         }} />
         {filename != null ? <img src={`/api/attachmentHandler/${filename}`}></img> : ""}
-        {JSON.stringify(movie)}
+        {process.env.NEXT_PUBLIC_ENV == "DEV" ? <div>{JSON.stringify(movie)}</div> : ""}
     </div>
 }
