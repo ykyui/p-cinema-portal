@@ -22,7 +22,7 @@ export const config = {
 export default (req, res) => {
     // Return a Promise to let Next.js know when we're done
     // processing the request:
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         // In case the current API request is for logging in,
         // we'll need to intercept the API response.
         // More on that in a bit.
@@ -51,7 +51,7 @@ export default (req, res) => {
         // auth token that we want to strip out and set
         // as an HTTP-only cookie.
         if (isLogin) {
-            proxy.once('proxyRes', (proxyRes, req, res) => {
+            proxy.once('proxyRes', (proxyRes, _req, _res) => {
                 // Read the API's response body from
                 // the stream:
                 let apiResponseBody = ''
@@ -96,9 +96,7 @@ export default (req, res) => {
 
         // Don't forget to handle errors:
         proxy.on("error", (err, req, res) => {
-            if (res.statusCode == 401) {
-                cookies.set('auth-token', "")
-            }
+
         })
 
         proxy.once("proxyRes", (proxyRes, req, res) => {
@@ -123,7 +121,7 @@ export default (req, res) => {
             // want to pass along the auth token).
             selfHandleResponse: isLogin || isLogout,
         }, (err, req, res) => {
-            
+
         })
 
 

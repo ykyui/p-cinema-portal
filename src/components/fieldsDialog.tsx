@@ -3,24 +3,34 @@ import { LocalizationProvider, TimeField } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import dayjs from "dayjs"
 import React, { useEffect, useState } from "react"
+import { Field } from "../model/field"
+import { Movie } from "../model/movie"
 
-export default function FieldsDialog(props) {
+type Props = {
+    date: string,
+    field?: Field | undefined,
+    children: JSX.Element //| string | JSX.Element[] | (() => JSX.Element),
+    callback: (date: string, selectedMoive: Movie) => void,
+    callbackDelete?: () => void
+}
+
+export default function FieldsDialog({ date, field, children, callback, callbackDelete }: Props) {
     const [openDialog, setDialog] = useState(false)
     const [time, setTime] = useState(dayjs())
     const [availableMovies, setAvailableMovies] = useState([])
     const [selectedMoive, setSelectedMovie] = useState()
     useEffect(() => {
         if (openDialog && availableMovies.length == 0) {
-            fetch(`/api/movies?date=${props.date}`).then((res) => res.json()).then((res) => setAvailableMovies(res))
-            if (props.field != undefined)
-                setTime(dayjs(`1970-01-01T${props.field.showTime}`))
+            fetch(`/api/movies?date=${date}`).then((res) => res.json()).then((res) => setAvailableMovies(res))
+            if (field != undefined)
+                setTime(dayjs(`1970-01-01T${field.showTime}`))
         }
     }, [openDialog])
 
     useEffect(() => {
-        if (props.field != undefined)
+        if (field != undefined)
             availableMovies?.forEach((m) => {
-                if (m.id == props.field.movie.id) {
+                if (m.id == field.movie.id) {
                     setSelectedMovie(m)
                     return
                 }
@@ -29,7 +39,7 @@ export default function FieldsDialog(props) {
 
 
     return <>
-        {React.cloneElement(props.children, {
+        {React.cloneElement(children, {
             onClick: () => {
                 setDialog(true)
             }
@@ -53,15 +63,15 @@ export default function FieldsDialog(props) {
                 </div>)}
             </div>
             <DialogActions>
-                {props.field != undefined && props.delete != undefined ? <Button onClick={() => {
-                    props.delete()
+                {field != undefined && callbackDelete != undefined ? <Button onClick={() => {
+                    callbackDelete()
                     setDialog(false)
                 }}>Delete</Button> : ""}
                 <Button autoFocus onClick={() => setDialog(false)}>
                     Cancel
                 </Button>
                 <Button onClick={() => {
-                    props.callback(time.format("HH:mm"), selectedMoive)
+                    callback(time.format("HH:mm"), selectedMoive)
                     setDialog(false)
                 }}>Ok</Button>
             </DialogActions>

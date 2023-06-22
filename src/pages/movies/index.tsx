@@ -1,7 +1,8 @@
-import { httpAuthResHelper } from "@/helper"
+
 import { Button, Chip, CircularProgress } from "@mui/material"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { httpAuthResHelper } from "../../helper"
 
 export async function getServerSideProps(context) {
     //     // const response = await fetch(`http://${context.req.headers.host}/api/movies`)
@@ -26,7 +27,7 @@ export async function getServerSideProps(context) {
 
 
 export default function MovieIndex() {
-    let [data, setData] = useState({})
+    let [data, setData] = useState([])
     let [loading, setLoading] = useState(true)
     useEffect(() => {
         setLoading(true)

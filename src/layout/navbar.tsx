@@ -1,7 +1,8 @@
-import { httpAuthResHelper } from "@/helper";
-import { authState, login, logout } from "@/redux/authSlice";
+import { httpAuthResHelper } from "../helper";
+import { authState, login, logout } from "../redux/authSlice";
 import { Button } from "@mui/material";
 import jwtDecode from "jwt-decode";
+import Head from "next/head";
 import Link from "next/link";
 import { Router, useRouter } from "next/router";
 import { useEffect } from "react";
@@ -22,4 +23,5 @@ export default function NavBar(params) {
             }}>logout</Button>
         </div>
     </div>
+
 }

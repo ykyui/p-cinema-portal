@@ -1,8 +1,20 @@
-import SeattingPlan from "@/components/seattingPlan";
-import { httpAuthResHelper } from "@/helper";
+import SeattingPlan from "../../../components/seattingPlan";
+import { httpAuthResHelper } from "../../../helper";
 import { Button, CircularProgress, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { House } from "../../../model/house";
+
+interface FormElements extends HTMLFormControlsCollection {
+    name: HTMLInputElement
+    width: HTMLInputElement
+    height: HTMLInputElement
+}
+
+interface SubmitFormElement extends HTMLFormElement {
+    readonly elements: FormElements
+}
+
 
 export async function getServerSideProps(context) {
     return { props: { query: context?.query } };
@@ -14,7 +26,7 @@ export default function houseDetail({ query }) {
     const [height, setHeight] = useState(0)
     const [specialSeat, setSpecialSeat] = useState([])
     const [selectedSeat, setSelectedSeat] = useState([])
-    const [house, setHouse] = useState({})
+    const [house, setHouse] = useState({} as House)
     const [isLoading, setLoading] = useState(false)
     const { theatreId, houseId } = query
 
@@ -44,7 +56,7 @@ export default function houseDetail({ query }) {
         setSelectedSeat([])
     }
 
-    const submit = (e) => {
+    const submit = (e: React.FormEvent<SubmitFormElement>) => {
         e.preventDefault();
         fetch(`/api/admin/createOrUpdateHouse`, {
             method: 'POST',
@@ -53,11 +65,11 @@ export default function houseDetail({ query }) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "houseId": parseInt(router.query.houseId ?? 0),
-                "theatreId": parseInt(router.query.theatreId),
-                "name": e.target.name.value,
-                "width": parseInt(e.target.width.value),
-                "height": parseInt(e.target.height.value),
+                "houseId": parseInt(router.query.houseId as string),
+                "theatreId": parseInt(router.query.theatreId as string),
+                "name": e.currentTarget.elements.name.value,
+                "width": parseInt(e.currentTarget.elements.width.value),
+                "height": parseInt(e.currentTarget.elements.height.value),
                 "specialSeat": specialSeat,
             })
         }).then(httpAuthResHelper).then(e => {
@@ -71,8 +83,8 @@ export default function houseDetail({ query }) {
     return <form onSubmit={submit}>
         <div className="flex justify-between"><Button variant="outlined" onClick={() => router.back()}>back</Button> <Button variant="outlined" type="submit">Submit</Button></div>
         <TextField label="Name" id="name" defaultValue={house.name}></TextField>
-        <TextField label="width" id="width" type="number" onChange={(e) => setWidth(e.target.value)} value={width}></TextField>
-        <TextField label="height" id="height" type="number" onChange={(e) => setHeight(e.target.value)} value={height}></TextField>
+        <TextField label="width" id="width" type="number" onChange={(e) => setWidth(parseInt(e.target.value))} value={width}></TextField>
+        <TextField label="height" id="height" type="number" onChange={(e) => setHeight(parseInt(e.target.value))} value={height}></TextField>
         <SeattingPlan col={width} row={height} specialSeat={specialSeat} selectedSeat={selectedSeat} setSelectedSeat={setSelectedSeat} adminMode={true}></SeattingPlan>
         <Button variant="outlined" onClick={() => setType('')}>Free Seat</Button>
         <Button variant="outlined" onClick={() => setType('space')}>Set Space</Button>

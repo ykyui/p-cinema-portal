@@ -1,5 +1,5 @@
 
-export const httpAuthResHelper = (e) => {
+export const httpAuthResHelper = (e: Response) => {
     if (e.status == 401) {
         window.location.reload()
         return

@@ -1,4 +1,4 @@
-import { arrayGen, httpAuthResHelper } from "@/helper";
+import { arrayGen, httpAuthResHelper } from "../../helper";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -7,7 +7,19 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import FieldsDialog from "@/components/fieldsDialog";
+import FieldsDialog from "../../components/fieldsDialog";
+import { Theatre } from "../../model/theatre";
+import { Movie } from "../../model/movie";
+import { Field } from "../../model/field";
+
+interface FormElements extends HTMLFormControlsCollection {
+    name: HTMLInputElement
+}
+
+interface SubmitFormElement extends HTMLFormElement {
+    readonly elements: FormElements
+}
+
 
 export async function getServerSideProps(context) {
     return { props: { query: context?.query } };
@@ -15,7 +27,7 @@ export async function getServerSideProps(context) {
 export default function TheatreDetail({ query }) {
     const router = useRouter()
     const { theatreId } = query
-    const [theatres, setTheatres] = useState({})
+    const [theatres, setTheatres] = useState({} as Theatre)
     const [isLoading, setLoading] = useState(false)
     const [scheduleDate, setScheduleDate] = useState(dayjs())
     const [fieldList, setFieldList] = useState([])
@@ -40,17 +52,17 @@ export default function TheatreDetail({ query }) {
         })
     }, [scheduleDate])
 
-    const addFields = (showTime, movie, houseId) => {
+    const addFields = (showTime: string, movie: Movie, houseId: number) => {
         setFieldList([...fieldList, { movie, showTime, house: { houseId } }])
     }
 
-    const editField = (field, time, movie) => {
+    const editField = (field: Field, time: string, movie: Movie) => {
         field.showTime = time
         field.movie = movie
         setFieldList([...fieldList])
     }
 
-    const deleteField = (field) => {
+    const deleteField = (field: Field) => {
         setFieldList([...fieldList.filter((e) => e != field)])
     }
 
@@ -78,8 +90,7 @@ export default function TheatreDetail({ query }) {
     }
 
 
-
-    const submit = (e) => {
+    const submit = (e: React.FormEvent<SubmitFormElement>) => {
         e.preventDefault();
         fetch(`/api/admin/createOrUpdateTheatre`, {
             method: 'POST',
@@ -89,7 +100,7 @@ export default function TheatreDetail({ query }) {
             },
             body: JSON.stringify({
                 "theatreId": parseInt(theatreId ?? "0"),
-                "name": e.target.name.value,
+                "name": e.currentTarget.elements.name.value,
             })
         }).then(httpAuthResHelper).then(e => {
             if (e.status == 200) { router.back() }
@@ -146,7 +157,7 @@ export default function TheatreDetail({ query }) {
                             {fieldList.filter((f) => f.house.houseId == e.houseId).map((f) => {
                                 const startTime = dayjs(`1970-01-01T${f.showTime}`)
                                 const endTime = startTime.add(Math.floor(f.movie.length / 60), 'h').add(f.movie.length % 60, 'm')
-                                return <FieldsDialog date={scheduleDate.format("YYYY-MM-DD")} field={f} callback={(time, movie) => editField(f, time, movie)} delete={() => deleteField(f)}>
+                                return <FieldsDialog date={scheduleDate.format("YYYY-MM-DD")} field={f} callback={(time, movie) => editField(f, time, movie)} callbackDelete={() => deleteField(f)}>
                                     <div className="bg-orange-600 w-full absolute opacity-80" style={{
                                         height: `${f.movie.length / (60 * 24) * 100}%`,
                                         top: `${(startTime.hour() * 60 + startTime.minute()) / (60 * 24) * 100}%`

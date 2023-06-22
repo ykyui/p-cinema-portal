@@ -1,4 +1,4 @@
-import { httpAuthResHelper } from "@/helper";
+import { httpAuthResHelper } from "../helper";
 import { Button } from "@mui/material";
 import axios from "axios";
 import { useRef, useState } from "react";

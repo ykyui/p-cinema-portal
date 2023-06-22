@@ -1,9 +1,18 @@
 import { Button, TextField } from "@mui/material";
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useDispatch } from "react-redux";
-import { login } from "@/redux/authSlice";
+import { login } from "../redux/authSlice";
 import { useState } from "react";
 import { useRouter } from "next/router";
+
+interface FormElements extends HTMLFormControlsCollection {
+    username: HTMLInputElement
+    password: HTMLInputElement
+}
+
+interface LoginFormElement extends HTMLFormElement {
+    readonly elements: FormElements
+}
 
 
 
@@ -12,7 +21,8 @@ export default function LoginPage(params) {
     const dispatch = useDispatch();
     const router = useRouter()
 
-    const doLogin = (e) => {
+
+    const doLogin = (e: React.FormEvent<LoginFormElement>) => {
         e.preventDefault();
         setLoading(true)
         fetch(`api/admin/login`, {
@@ -21,15 +31,15 @@ export default function LoginPage(params) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: e.target.username.value, password: e.target.password.value })
-        }).then(async e => {
+            body: JSON.stringify({ username: e.currentTarget.elements.username.value, password: e.currentTarget.elements.password.value })
+        }).then(async (e) => {
             if (e.status != 200)
                 throw Error(await e.json())
             return e.json()
         }).then((e) => {
-            setLoading(false)
+            console.log(e)
             router.push("/")
-        }).catch((e) => {
+        }).finally(() => {
             setLoading(false)
         })
     }
