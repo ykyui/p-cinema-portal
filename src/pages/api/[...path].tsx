@@ -29,10 +29,12 @@ export default (req, res) => {
         const pathname = url.parse(req.url).pathname
         const isLogin = pathname === '/api/admin/login'
         const isLogout = pathname === '/api/logout'
+        const isCheckout = pathname === '/api/transaction/checkout'
 
         // Get the `auth-token` cookie:
         const cookies = new Cookies(req, res)
         const authToken = cookies.get('auth-token')
+        const transactionToken = cookies.get('transaction-token')
         // Rewrite the URL: strip out the leading '/api'.
         // For example, '/api/login' would become '/login'.
         // ️You might want to adjust this depending
@@ -45,11 +47,14 @@ export default (req, res) => {
         if (authToken) {
             req.headers['Authorization'] = authToken
         }
+        if (transactionToken) {
+            req.headers['Transaction'] = transactionToken
+        }
 
         // In case the request is for login, we need to
         // intercept the API's response. It contains the
         // auth token that we want to strip out and set
-        // as an HTTP-only cookie.
+        // as an HTTP-only cookie.=
         if (isLogin) {
             proxy.once('proxyRes', (proxyRes, _req, _res) => {
                 // Read the API's response body from
@@ -65,13 +70,13 @@ export default (req, res) => {
                 proxyRes.on('end', () => {
                     try {
                         // Extract the authToken from API's response:
-                        const { Token } = JSON.parse(apiResponseBody)
+                        const { token } = JSON.parse(apiResponseBody)
 
                         // Set the authToken as an HTTP-only cookie.
                         // We'll also set the SameSite attribute to
                         // 'lax' for some additional CSRF protection.
                         const cookies = new Cookies(req, res)
-                        cookies.set('auth-token', Token, {
+                        cookies.set('auth-token', token, {
                             httpOnly: true,
                             sameSite: 'lax',
                         })
@@ -79,7 +84,7 @@ export default (req, res) => {
                         // Our response to the client won't contain
                         // the actual authToken. This way the auth token
                         // never gets exposed to the client.
-                        res.status(200).json({ loggedIn: true })
+                        res.status(_res.statusCode).json({ loggedIn: _res.statusCode == 200 })
                         resolve()
                     } catch (err) {
                         reject(err)
@@ -92,6 +97,42 @@ export default (req, res) => {
             res.status(200).json({ logout: true })
             resolve()
             return
+        } else if (isCheckout) {
+            proxy.once('proxyRes', (proxyRes, _req, _res) => {
+                // Read the API's response body from
+                // the stream:
+                let apiResponseBody = ''
+                proxyRes.on('data', (chunk) => {
+                    apiResponseBody += chunk
+                })
+
+                // Once we've read the entire API
+                // response body, we're ready to
+                // handle it:
+                proxyRes.on('end', () => {
+                    try {
+                        // Extract the authToken from API's response:
+                        const { transactionJwt } = JSON.parse(apiResponseBody)
+
+                        // Set the authToken as an HTTP-only cookie.
+                        // We'll also set the SameSite attribute to
+                        // 'lax' for some additional CSRF protection.
+                        const cookies = new Cookies(req, res)
+                        cookies.set('transaction-token', transactionJwt, {
+                            httpOnly: true,
+                            sameSite: 'lax',
+                        })
+
+                        // Our response to the client won't contain
+                        // the actual authToken. This way the auth token
+                        // never gets exposed to the client.
+                        res.status(_res.statusCode).json({ transactionJwt })
+                        resolve()
+                    } catch (err) {
+                        reject(err)
+                    }
+                })
+            })
         }
 
         // Don't forget to handle errors:
@@ -119,7 +160,7 @@ export default (req, res) => {
             // we need to tell http-proxy that we'll handle
             // the client-response ourselves (since we don't
             // want to pass along the auth token).
-            selfHandleResponse: isLogin || isLogout,
+            selfHandleResponse: isLogin || isLogout || isCheckout,
         }, (err, req, res) => {
 
         })
