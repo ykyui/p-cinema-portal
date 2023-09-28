@@ -42,7 +42,7 @@ export default function FieldsDialog({ date, field, children, callback, callback
         {React.cloneElement(children, {
             onClick: () => {
                 setDialog(true)
-            }
+            },
         })}
         <Dialog open={openDialog}>
             <DialogTitle>Add</DialogTitle>
@@ -57,7 +57,7 @@ export default function FieldsDialog({ date, field, children, callback, callback
                 </LocalizationProvider>
             </DialogContent>
             <div className="flex justify-center items-center">
-                {availableMovies?.map((m) => <div className={`w-32 aspect-[12/16] bg-green-400 m-8 border-4 ${selectedMoive == m ? "border-red-500" : "border-black"}`} onClick={() => setSelectedMovie(m)}>
+                {availableMovies?.map((m, i) => <div key={i} className={`w-32 aspect-[12/16] bg-green-400 m-8 border-4 ${selectedMoive == m ? "border-red-500" : "border-black"}`} onClick={() => setSelectedMovie(m)}>
                     <img src={`/api/attachmentHandler/${m.cover}`}></img>
                     {m.name}
                 </div>)}

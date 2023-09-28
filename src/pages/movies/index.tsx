@@ -40,8 +40,8 @@ export default function MovieIndex() {
         <div>
             <Link href="/movies/movieDetail"><Button>Create Movie</Button></Link>
         </div>
-        {loading ? <CircularProgress /> : data.map(e => {
-            return <Link href={{
+        {loading ? <CircularProgress /> : data.map((e,i) => {
+            return <Link key={i} href={{
                 pathname: '/movies/movieDetail',
                 query: { movieId: e.id },
             }}><Chip label={e.name}></Chip ></Link>

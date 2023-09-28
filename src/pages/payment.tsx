@@ -48,7 +48,7 @@ export default function Payment() {
     return <div>
         {waiting.map((e, i) => {
             const a = "A".charCodeAt(0)
-            return <div className={`p-4 grid grid-cols-4 ${i % 2 == 0 ? "" : "bg-gray-200"}`}>
+            return <div key={i} className={`p-4 grid grid-cols-4 ${i % 2 == 0 ? "" : "bg-gray-200"}`}>
                 <div className="col-span-4">{e.transactionId}</div>
                 <div className="col-span-1">adult: {e.adult}</div>
                 <div className="col-span-1">child: {e.child}</div>
@@ -56,7 +56,8 @@ export default function Payment() {
                 <div className="col-span-1">disabled: {e.disabled}</div>
                 <div className="col-span-4">bought seat: {e.boughtSeat.map((v, i) => `${v.displayY / 26 >= 1 ? String.fromCharCode(a + v.displayY / 26 - 1) : ""}${String.fromCharCode(a + v.displayY % 26)}${v.displayX}`).join(", ")}</div>
                 <Button onClick={() => approve(e.transactionId, true)}>approve</Button>
-                <Button onClick={() => approve(e.transactionId, false)}>reject</Button></div>
+                <Button onClick={() => approve(e.transactionId, false)}>reject</Button>
+            </div>
         })}
     </div>
 }

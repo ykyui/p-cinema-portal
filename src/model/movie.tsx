@@ -1,4 +1,5 @@
-import { Field } from "./Field"
+import { Field } from "./field"
+
 
 export interface Movie {
     id: number

@@ -12,11 +12,13 @@ export default function Theatres({ data }) {
         <div>
             <Link href="/theatres/theatreDetail"><Button>Create Theatre</Button></Link>
         </div>
-        {data.map(e => {
-            return <Link href={{
-                pathname: '/theatres/theatreDetail',
-                query: { theatreId: e.theatreId },
-            }}><Chip label={e.name}></Chip ></Link>
+        {data.map((e, i) => {
+            return <Link
+                key={i}
+                href={{
+                    pathname: '/theatres/theatreDetail',
+                    query: { theatreId: e.theatreId },
+                }}><Chip label={e.name}></Chip ></Link>
         })}
         {process.env.NEXT_PUBLIC_ENV == "DEV" ? <div>{JSON.stringify(data)}</div> : ""}
     </div>

@@ -64,7 +64,7 @@ export default function SeattingPlan({ col, row, specialSeat, selectedSeat, setS
                 if (aisle) skipY++
                 const seatY = y - skipY
                 let skipX = 0
-                return <div style={{ maxWidth: `${col / row * 50}%` }}>
+                return <div key={y} style={{ maxWidth: `${col / row * 50}%` }}>
                     <div className="flex pb-0.5">
                         <div className="cursor-pointer flex-1 aspect-square ml-0.5 overflow-clip md:text-base text-xs text-center" onClick={() => { if (adminMode) selectAisle(y) }}>
                             {aisle ? "->" : `${seatY / 26 >= 1 ? String.fromCharCode(a + seatY / 26 - 1) : ""}${String.fromCharCode(a + seatY % 26)}`}
@@ -75,7 +75,7 @@ export default function SeattingPlan({ col, row, specialSeat, selectedSeat, setS
                             const isSelect = selectedX.findIndex((v) => v.x == x) > -1
                             if (seatType == "space") skipX++
                             const seatX = x - (skipX > 10 ? 0 : skipX) + 1
-                            return <div className={`flex-1 aspect-square ml-0.5 overflow-hidden
+                            return <div key={x} className={`flex-1 aspect-square ml-0.5 overflow-hidden
                                 ${seatType == "space" && !isSelect ? "opacity-0 " : ""}
                                 ${isSelect ? "bg-green-400 " : seatColor[seatType] ?? "bg-yellow-200"}
                                 ${cantSelectSeatType[seatType] == undefined || adminMode ? "cursor-pointer" : "cursor-not-allowed"}

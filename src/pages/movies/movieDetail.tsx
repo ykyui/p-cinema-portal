@@ -23,7 +23,7 @@ export async function getServerSideProps(context) {
     return { props: { query: context?.query } };
 }
 
-export default function movieDetail({ query }) {
+export default function MovieDetail({ query }) {
     const router = useRouter()
     const { movieId } = query
     const [filename, setFilename] = useState(null)

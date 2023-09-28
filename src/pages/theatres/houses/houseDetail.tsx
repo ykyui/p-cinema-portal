@@ -20,7 +20,7 @@ export async function getServerSideProps(context) {
     return { props: { query: context?.query } };
 }
 
-export default function houseDetail({ query }) {
+export default function HouseDetail({ query }) {
     const router = useRouter()
     const [width, setWidth] = useState(0)
     const [height, setHeight] = useState(0)
